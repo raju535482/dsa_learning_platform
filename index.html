@@ -634,6 +634,126 @@ body {
   width:90px;
 }
 .viz-input:focus { border-color:var(--accent-border); box-shadow:0 0 0 3px var(--accent-bg); }
+/* ══════════════════════════════════════════════
+   VISUALIZER OVERHAUL — bigger, cleaner, animated
+   ══════════════════════════════════════════════ */
+
+/* Explanation panel */
+.viz-explain {
+  display:flex; align-items:flex-start; gap:14px;
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(99,102,241,0.05) 100%);
+  border:1.5px solid var(--border-med); border-left:4px solid var(--accent);
+  border-radius:var(--radius-xl); padding:16px 20px; margin-bottom:20px;
+  transition:all 0.35s var(--ease); min-height:72px;
+}
+.viz-explain.state-found   { border-left-color:var(--green); background:linear-gradient(135deg,var(--bg-card),rgba(16,185,129,0.06)); }
+.viz-explain.state-compare { border-left-color:var(--yellow); background:linear-gradient(135deg,var(--bg-card),rgba(245,158,11,0.06)); }
+.viz-explain.state-error   { border-left-color:var(--red);   background:linear-gradient(135deg,var(--bg-card),rgba(239,68,68,0.06)); }
+.viz-explain.state-done    { border-left-color:var(--green); background:linear-gradient(135deg,var(--bg-card),rgba(16,185,129,0.08)); }
+.viz-explain-icon { font-size:26px; line-height:1; flex-shrink:0; margin-top:2px; }
+.viz-explain-body { flex:1; min-width:0; }
+.viz-explain-title {
+  font-size:15px; font-weight:700; color:var(--text-1);
+  margin-bottom:5px; line-height:1.3;
+}
+.viz-explain-detail {
+  font-size:12.5px; color:var(--text-2); line-height:1.6;
+  font-family:var(--font-mono);
+}
+.viz-explain-detail strong { color:var(--accent2); }
+.viz-explain-detail .val-green { color:var(--green); font-weight:700; }
+.viz-explain-detail .val-yellow { color:var(--yellow); font-weight:700; }
+.viz-explain-detail .val-red { color:var(--red); font-weight:700; }
+
+/* Step counter badge */
+.viz-step-row {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:14px; flex-wrap:wrap; gap:8px;
+}
+.viz-step-badge {
+  font-size:11.5px; font-weight:700; font-family:var(--font-mono);
+  background:var(--accent-bg); color:var(--accent2); border:1px solid var(--accent);
+  padding:3px 10px; border-radius:99px;
+}
+
+/* Enhanced array boxes */
+.arr-box {
+  width:54px; height:54px; display:flex; align-items:center; justify-content:center;
+  border:2.5px solid var(--border-med); border-radius:10px;
+  font-size:16px; font-weight:800; background:var(--bg-surface); color:var(--text-1);
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1); position:relative;
+  cursor:pointer; user-select:none; flex-shrink:0;
+}
+.arr-box:hover { transform:translateY(-4px) scale(1.05); border-color:var(--accent-border); box-shadow:0 8px 20px rgba(99,102,241,0.25); }
+.arr-box .idx { position:absolute; bottom:-22px; font-size:10.5px; color:var(--text-3); font-weight:700; font-family:var(--font-mono); }
+.arr-box.highlight { background:var(--accent-bg); border-color:var(--accent); color:var(--accent2); box-shadow:0 0 20px rgba(99,102,241,0.4); animation:viz-pulse 1.2s ease-in-out infinite; }
+.arr-box.found { background:var(--green-bg); border-color:var(--green); color:var(--green); box-shadow:0 0 20px rgba(16,185,129,0.4); animation:viz-found 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.arr-box.compare { background:var(--yellow-bg); border-color:var(--yellow); color:var(--yellow); animation:viz-compare 0.8s ease-in-out infinite; }
+.arr-box.sorted { background:var(--green-bg); border-color:var(--green); color:var(--green); transform:none; }
+
+/* Enhanced sort bars */
+.sort-bar {
+  border-radius:8px 8px 0 0; display:flex; align-items:flex-start; justify-content:center;
+  padding-top:6px; font-size:13px; font-weight:800; color:#fff;
+  transition:height 0.4s cubic-bezier(0.34,1.56,0.64,1), background 0.3s var(--ease);
+  min-width:36px; box-shadow:0 -2px 8px rgba(0,0,0,0.15);
+}
+
+/* Node (linked list) */
+.node { display:inline-flex; flex-direction:column; align-items:center; gap:4px; }
+.node-box {
+  min-width:54px; height:44px; display:flex; align-items:center; justify-content:center;
+  border:2.5px solid var(--border-med); border-radius:10px;
+  font-size:16px; font-weight:800; background:var(--bg-surface); padding:0 16px;
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.node-box:hover { border-color:var(--accent-border); background:var(--accent-bg); transform:translateY(-3px); }
+.arrow { font-size:20px; color:var(--text-3); align-self:center; }
+
+/* Step log */
+.step-log {
+  margin-top:16px; padding:12px 16px; border-radius:var(--radius-md);
+  background:var(--bg-surface); border:1px solid var(--border);
+  font-size:13px; color:var(--text-2); font-family:var(--font-mono);
+  line-height:1.6; min-height:44px; transition:all 0.25s var(--ease);
+}
+
+/* SVG viz nodes — bigger */
+.viz-svg-wrap { display:flex; justify-content:center; align-items:flex-start; overflow-x:auto; }
+
+/* New keyframes */
+@keyframes viz-pulse {
+  0%,100%{ box-shadow:0 0 0 0 rgba(99,102,241,0.4); }
+  50%    { box-shadow:0 0 20px 4px rgba(99,102,241,0.5); transform:scale(1.06); }
+}
+@keyframes viz-compare {
+  0%,100%{ box-shadow:0 0 0 0 rgba(245,158,11,0.4); transform:scale(1); }
+  50%    { box-shadow:0 0 16px 4px rgba(245,158,11,0.5); transform:scale(1.08); }
+}
+@keyframes viz-found {
+  0%  { transform:scale(0.8); opacity:0.5; }
+  60% { transform:scale(1.15); }
+  100%{ transform:scale(1); opacity:1; }
+}
+@keyframes viz-swap {
+  0%  { transform:translateY(0); }
+  30% { transform:translateY(-18px); }
+  70% { transform:translateY(-18px); }
+  100%{ transform:translateY(0); }
+}
+@keyframes viz-bar-rise {
+  from{ transform:scaleY(0); transform-origin:bottom; }
+  to  { transform:scaleY(1); transform-origin:bottom; }
+}
+@keyframes viz-node-appear {
+  from{ transform:scale(0) rotate(-10deg); opacity:0; }
+  to  { transform:scale(1) rotate(0); opacity:1; }
+}
+@keyframes viz-slide-right {
+  from{ transform:translateX(-12px); opacity:0; }
+  to  { transform:translateX(0); opacity:1; }
+}
+
 /* ── Code Lab Button ── */
 .lab-btn {
   display:flex;align-items:center;gap:6px;padding:7px 14px;
@@ -1967,6 +2087,25 @@ function renderContent() {
 // ============================================================
 // VIZ ROUTER
 // ============================================================
+/* ── helper: update explanation panel ── */
+function setVizExplain(id, icon, title, detail, state) {
+  const el = document.getElementById(id + 'Explain');
+  if (!el) return;
+  el.className = 'viz-explain' + (state ? ' state-' + state : '');
+  el.innerHTML = `
+    <div class="viz-explain-icon">${icon}</div>
+    <div class="viz-explain-body">
+      <div class="viz-explain-title">${title}</div>
+      ${detail ? `<div class="viz-explain-detail">${detail}</div>` : ''}
+    </div>`;
+}
+function explainPanel(id, icon, msg) {
+  return `<div class="viz-explain" id="${id}Explain">
+    <div class="viz-explain-icon">${icon}</div>
+    <div class="viz-explain-body"><div class="viz-explain-title">${msg}</div></div>
+  </div>`;
+}
+
 function renderViz(type) {
   const controls = (btns, hint='') => `
     <div class="viz-controls">${btns}${hint ? `<span class="hint-pill"><i class="ti ti-info-circle"></i> ${hint}</span>` : ''}</div>`;
@@ -1974,33 +2113,37 @@ function renderViz(type) {
   if (type === 'array') return `
     <div class="section-title"><i class="ti ti-layout-grid"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('arr','🗂️','Click any element to inspect its index and value')}
       ${controls(`<button class="viz-btn" onclick="resetArr()"><i class="ti ti-refresh"></i> Reset</button>
         <button class="viz-btn" onclick="shuffleArr()"><i class="ti ti-arrows-shuffle"></i> Shuffle</button>`,
         'Click any element to inspect')}
       <div class="viz-canvas" id="arrViz"></div>
-      <div class="step-log" id="arrLog">Click an element to inspect its index</div>
+      <div class="step-log" id="arrLog">Click an element above to inspect</div>
     </div>`;
 
   if (type === 'linkedlist') return `
     <div class="section-title"><i class="ti ti-link"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('ll','🔗','Each node holds a value + pointer to the next node')}
       ${controls(`<button class="viz-btn primary" onclick="addLLNode()"><i class="ti ti-plus"></i> Add Node</button>
         <button class="viz-btn" onclick="resetLL()"><i class="ti ti-refresh"></i> Reset</button>`)}
-      <div class="viz-canvas" id="llViz" style="flex-wrap:nowrap;overflow-x:auto;padding-bottom:16px"></div>
+      <div class="viz-canvas" id="llViz" style="flex-wrap:nowrap;overflow-x:auto;padding-bottom:24px"></div>
     </div>`;
 
   if (type === 'stack') return `
     <div class="section-title"><i class="ti ti-stack"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('stack','📚','LIFO — Last In, First Out. Push adds to top; Pop removes from top')}
       ${controls(`<button class="viz-btn primary" onclick="stackPush()"><i class="ti ti-arrow-bar-down"></i> Push</button>
         <button class="viz-btn" onclick="stackPop()"><i class="ti ti-arrow-bar-up"></i> Pop</button>`)}
-      <div style="display:flex;flex-direction:column-reverse;align-items:center;gap:5px;min-height:180px;margin-top:10px" id="stackViz"></div>
-      <div class="step-log" id="stackLog">Stack is ready</div>
+      <div style="display:flex;flex-direction:column-reverse;align-items:center;gap:6px;min-height:200px;margin-top:10px" id="stackViz"></div>
+      <div class="step-log" id="stackLog">Stack is empty — push some elements</div>
     </div>`;
 
   if (type === 'queue') return `
     <div class="section-title"><i class="ti ti-arrows-right-left"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('q','🚶','FIFO — First In, First Out. Enqueue adds to rear; Dequeue removes from front')}
       ${controls(`<button class="viz-btn primary" onclick="qEnqueue()"><i class="ti ti-login"></i> Enqueue</button>
         <button class="viz-btn" onclick="qDequeue()"><i class="ti ti-logout"></i> Dequeue</button>`)}
       <div class="viz-canvas" id="qViz"></div>
@@ -2010,6 +2153,7 @@ function renderViz(type) {
   if (type === 'hashmap') return `
     <div class="section-title"><i class="ti ti-hash"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('hm','#️⃣','Hash function maps key → bucket index. O(1) average put/get')}
       ${controls(`<input class="viz-input" id="hmKey" placeholder="Key (e.g. apple)">
         <input class="viz-input" id="hmVal" placeholder="Value (e.g. 42)">
         <button class="viz-btn primary" onclick="hmPut()">Put</button>
@@ -2022,39 +2166,44 @@ function renderViz(type) {
   if (type === 'bsearch') return `
     <div class="section-title"><i class="ti ti-search"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('bs','🔍','Press "Next Step" to watch Binary Search halve the search space each iteration')}
       ${controls(`<button class="viz-btn primary" onclick="bsStep()"><i class="ti ti-player-skip-forward"></i> Next Step</button>
         <button class="viz-btn" onclick="initBsearch()"><i class="ti ti-refresh"></i> Reset</button>
         <input class="viz-input" id="bsTarget" type="number" value="7" style="width:70px">
         <span style="font-size:12px;color:var(--text-3)">target</span>`)}
-      <div class="viz-canvas" id="bsViz" style="gap:3px;flex-wrap:nowrap"></div>
+      <div class="viz-canvas" id="bsViz" style="gap:4px;flex-wrap:nowrap"></div>
       <div class="step-log" id="bsLog">Press "Next Step" to begin</div>
     </div>`;
 
   if (type === 'bsort') return `
     <div class="section-title"><i class="ti ti-sort-ascending"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('sort','🔃','Each pass bubbles the largest unsorted value to the right')}
       ${controls(`<button class="viz-btn primary" onclick="bsortStep()"><i class="ti ti-player-skip-forward"></i> Next Step</button>
         <button class="viz-btn" onclick="initBsort()"><i class="ti ti-refresh"></i> Reset</button>
         <button class="viz-btn" onclick="runBsort()"><i class="ti ti-player-play"></i> Auto Play</button>`)}
-      <div class="viz-canvas" id="sortViz" style="align-items:flex-end;gap:5px;height:96px"></div>
+      <div class="viz-canvas" id="sortViz" style="align-items:flex-end;gap:6px;height:120px"></div>
       <div class="step-log" id="sortLog">Press "Next Step" to begin sorting</div>
     </div>`;
 
   if (type === 'msort') return `
     <div class="section-title"><i class="ti ti-binary-tree"></i> visualization</div>
     <div class="viz-area">
+      ${explainPanel('msort','⚡','Divide array in half recursively, then merge sorted halves — O(n log n)')}
       <div id="msortViz"></div>
     </div>`;
 
   if (type === 'qsort') return `
     <div class="section-title"><i class="ti ti-sort-descending"></i> visualization</div>
     <div class="viz-area">
+      ${explainPanel('qsort','⚡','Pick a pivot, partition around it, then recurse on each side')}
       <div id="qsortViz" style="display:flex;flex-direction:column;gap:10px"></div>
     </div>`;
 
   if (type === 'swin') return `
     <div class="section-title"><i class="ti ti-window"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('swin','🪟','Slide a fixed-size window across the array — O(n) instead of O(nk)')}
       ${controls(`<button class="viz-btn primary" onclick="swinStep()"><i class="ti ti-chevron-right"></i> Slide Right</button>
         <button class="viz-btn" onclick="initSwin()"><i class="ti ti-refresh"></i> Reset</button>`, 'Window size K = 3')}
       <div class="viz-canvas" id="swinViz"></div>
@@ -2064,6 +2213,7 @@ function renderViz(type) {
   if (type === 'twop') return `
     <div class="section-title"><i class="ti ti-arrows-exchange"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('twop','👈👉','Two pointers start at opposite ends and converge — O(n) to find a pair sum')}
       ${controls(`<button class="viz-btn primary" onclick="twopStep()"><i class="ti ti-player-skip-forward"></i> Step</button>
         <button class="viz-btn" onclick="initTwop()"><i class="ti ti-refresh"></i> Reset</button>`, 'Find pair summing to 14')}
       <div class="viz-canvas" id="twopViz" style="gap:14px"></div>
@@ -2073,45 +2223,50 @@ function renderViz(type) {
   if (type === 'tree') return `
     <div class="section-title"><i class="ti ti-binary-tree-2"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('tree','🌳','Select a traversal order to watch nodes light up one by one')}
       ${controls(`<button class="viz-btn" onclick="runTreeTraversal('pre')">Preorder</button>
         <button class="viz-btn" onclick="runTreeTraversal('in')">Inorder</button>
         <button class="viz-btn" onclick="runTreeTraversal('post')">Postorder</button>
         <button class="viz-btn" onclick="initTreeViz()"><i class="ti ti-refresh"></i> Reset</button>`)}
-      <div style="display:flex;justify-content:center;min-height:150px;margin-top:10px" id="treeViz"></div>
+      <div style="display:flex;justify-content:center;min-height:160px;margin-top:10px" id="treeViz"></div>
       <div class="step-log" id="treeLog">Select a traversal to animate nodes</div>
     </div>`;
 
   if (type === 'bfsdfs') return `
     <div class="section-title"><i class="ti ti-topology-star"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('graph','🕸️','BFS explores level by level; DFS dives deep before backtracking')}
       ${controls(`<button class="viz-btn primary" onclick="runGraphSearch('bfs')"><i class="ti ti-player-play"></i> BFS</button>
         <button class="viz-btn" onclick="runGraphSearch('dfs')"><i class="ti ti-player-play"></i> DFS</button>
         <button class="viz-btn" onclick="initGraphViz()"><i class="ti ti-refresh"></i> Reset</button>`)}
-      <div style="display:flex;justify-content:center;min-height:150px;margin-top:10px" id="graphViz"></div>
+      <div style="display:flex;justify-content:center;min-height:160px;margin-top:10px" id="graphViz"></div>
       <div class="step-log" id="graphLog">Choose BFS or DFS to animate the traversal</div>
     </div>`;
 
   if (type === 'dijkstra') return `
     <div class="section-title"><i class="ti ti-route"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('dijkstra','🗺️','Relax edges from the nearest unvisited node — greedy shortest path')}
       ${controls(`<button class="viz-btn primary" onclick="dijkstraStep()"><i class="ti ti-player-skip-forward"></i> Relax Next Edge</button>
         <button class="viz-btn" onclick="initDijkstraViz()"><i class="ti ti-refresh"></i> Reset</button>`)}
-      <div style="display:flex;justify-content:space-around;align-items:center;min-height:150px;margin-top:10px" id="dijkstraViz"></div>
+      <div style="display:flex;justify-content:space-around;align-items:center;min-height:160px;margin-top:10px" id="dijkstraViz"></div>
       <div class="step-log" id="dijkstraLog">Press "Relax Next Edge" to trace Dijkstra</div>
     </div>`;
 
   if (type === 'recur') return `
     <div class="section-title"><i class="ti ti-stack-2"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('recur','📞','Each call is pushed onto the call stack — it resolves when the base case is reached')}
       ${controls(`<button class="viz-btn primary" onclick="recurStep()"><i class="ti ti-player-skip-forward"></i> Step</button>
         <button class="viz-btn" onclick="initRecur()"><i class="ti ti-refresh"></i> Reset</button>`)}
-      <div style="display:flex;flex-direction:column-reverse;align-items:center;gap:5px;min-height:160px;margin-top:10px" id="recurViz"></div>
+      <div style="display:flex;flex-direction:column-reverse;align-items:center;gap:6px;min-height:180px;margin-top:10px" id="recurViz"></div>
       <div class="step-log" id="recurLog">Press "Step" to push factorial(4)</div>
     </div>`;
 
   if (type === 'dp') return `
     <div class="section-title"><i class="ti ti-table"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('dp','📊','Each cell is filled from previously solved subproblems — memoization in a table')}
       ${controls(`<button class="viz-btn primary" onclick="dpStep()"><i class="ti ti-player-skip-forward"></i> Fill Next Cell</button>
         <button class="viz-btn" onclick="initDP()"><i class="ti ti-refresh"></i> Reset</button>`)}
       <div class="viz-canvas" id="dpViz" style="gap:8px"></div>
@@ -2121,15 +2276,17 @@ function renderViz(type) {
   if (type === 'btrack') return `
     <div class="section-title"><i class="ti ti-git-branch"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('btrack','🌿','Explore choices; backtrack when a dead end is hit — prunes the search tree')}
       ${controls(`<button class="viz-btn primary" onclick="btrackStep()"><i class="ti ti-player-skip-forward"></i> Step</button>
         <button class="viz-btn" onclick="initBtrack()"><i class="ti ti-refresh"></i> Reset</button>`)}
-      <div style="display:flex;justify-content:center;min-height:160px;margin-top:10px" id="btrackViz"></div>
+      <div style="display:flex;justify-content:center;min-height:170px;margin-top:10px" id="btrackViz"></div>
       <div class="step-log" id="btrackLog">Press "Step" to explore the decision tree</div>
     </div>`;
 
   if (type === 'kadane') return `
     <div class="section-title"><i class="ti ti-chart-line"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('kadane','📈','Extend current subarray or start fresh — O(n) maximum subarray')}
       ${controls(`<button class="viz-btn primary" onclick="kadaneStep()"><i class="ti ti-player-skip-forward"></i> Next Index</button>
         <button class="viz-btn" onclick="initKadane()"><i class="ti ti-refresh"></i> Reset</button>`)}
       <div class="viz-canvas" id="kadaneViz" style="gap:6px"></div>
@@ -2139,6 +2296,7 @@ function renderViz(type) {
   if (type === 'greedy') return `
     <div class="section-title"><i class="ti ti-coins"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('greedy','🪙','Always pick the largest coin that fits — works when coins are canonical')}
       ${controls(`<button class="viz-btn primary" onclick="greedyStep()"><i class="ti ti-coin"></i> Select Coin</button>
         <button class="viz-btn" onclick="initGreedy()"><i class="ti ti-refresh"></i> Reset</button>`)}
       <div class="viz-canvas" id="greedyViz" style="gap:12px;flex-wrap:wrap"></div>
@@ -2148,48 +2306,53 @@ function renderViz(type) {
   if (type === 'kmp') return `
     <div class="section-title"><i class="ti ti-text-size"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('kmp','🔡','KMP uses the failure function to skip re-checking matched characters')}
       ${controls(`<button class="viz-btn primary" onclick="kmpStep()"><i class="ti ti-player-skip-forward"></i> Next Check</button>
         <button class="viz-btn" onclick="initKMP()"><i class="ti ti-refresh"></i> Reset</button>`)}
-      <div class="viz-canvas" id="kmpTextViz" style="gap:3px;margin-bottom:8px"></div>
-      <div class="viz-canvas" id="kmpPatViz" style="gap:3px;transition:margin-left 0.3s"></div>
+      <div class="viz-canvas" id="kmpTextViz" style="gap:4px;margin-bottom:8px"></div>
+      <div class="viz-canvas" id="kmpPatViz" style="gap:4px;transition:margin-left 0.35s var(--ease)"></div>
       <div class="step-log" id="kmpLog">Press "Next Check" to start KMP</div>
     </div>`;
 
   if (type === 'tsort') return `
     <div class="section-title"><i class="ti ti-sort-0-9"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('tsort','📋','Kahn\'s algorithm: repeatedly remove nodes with in-degree 0')}
       ${controls(`<button class="viz-btn primary" onclick="tsortStep()"><i class="ti ti-player-skip-forward"></i> Process Node</button>
         <button class="viz-btn" onclick="initTsort()"><i class="ti ti-refresh"></i> Reset</button>`)}
-      <div style="display:flex;justify-content:space-around;align-items:center;min-height:150px;margin-top:10px" id="tsortViz"></div>
+      <div style="display:flex;justify-content:space-around;align-items:center;min-height:160px;margin-top:10px" id="tsortViz"></div>
       <div class="step-log" id="tsortLog">Press "Process Node" to run Kahn's algorithm</div>
     </div>`;
 
   if (type === 'trie') return `
     <div class="section-title"><i class="ti ti-alphabet-latin"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('trie','🔤','Each edge is a character; shared prefixes share nodes — fast prefix search')}
       ${controls(`<button class="viz-btn primary" onclick="trieInsert()"><i class="ti ti-plus"></i> Insert "cat"</button>
         <button class="viz-btn" onclick="initTrieViz()"><i class="ti ti-refresh"></i> Reset</button>`)}
-      <div style="display:flex;justify-content:center;min-height:160px;margin-top:10px" id="trieViz"></div>
+      <div style="display:flex;justify-content:center;min-height:170px;margin-top:10px" id="trieViz"></div>
       <div class="step-log" id="trieLog">Trie loaded with "ap", "app", "bad"</div>
     </div>`;
 
   if (type === 'heap') return `
     <div class="section-title"><i class="ti ti-binary-tree"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('heap','⛺','Min-heap: parent ≤ children always. Insert then bubble-up to restore property')}
       ${controls(`<button class="viz-btn primary" onclick="heapStep()"><i class="ti ti-plus"></i> Insert 2</button>
         <button class="viz-btn" onclick="initHeapViz()"><i class="ti ti-refresh"></i> Reset</button>`)}
-      <div style="display:flex;justify-content:center;min-height:150px;margin-top:10px" id="heapViz"></div>
+      <div style="display:flex;justify-content:center;min-height:160px;margin-top:10px" id="heapViz"></div>
       <div class="step-log" id="heapLog">Min-heap: [1, 3, 5, 9, 6]</div>
     </div>`;
 
   if (type === 'ufind') return `
     <div class="section-title"><i class="ti ti-circles-relation"></i> interactive demo</div>
     <div class="viz-area">
+      ${explainPanel('ufind','⭕','Union-Find: merge sets in O(α(n)) ≈ O(1) using path compression')}
       ${controls(`<button class="viz-btn" onclick="ufindStep(0,1)">Union(0,1)</button>
         <button class="viz-btn" onclick="ufindStep(2,3)">Union(2,3)</button>
         <button class="viz-btn" onclick="ufindStep(1,3)">Union(1,3)</button>
         <button class="viz-btn" onclick="initUfind()"><i class="ti ti-refresh"></i> Reset</button>`)}
-      <div style="display:flex;justify-content:space-around;align-items:center;min-height:140px;margin-top:10px" id="ufindViz"></div>
+      <div style="display:flex;justify-content:space-around;align-items:center;min-height:150px;margin-top:10px" id="ufindViz"></div>
       <div class="step-log" id="ufindLog">Disjoint: 0, 1, 2, 3 — click unions to merge</div>
     </div>`;
 
@@ -2233,6 +2396,7 @@ function makeSVG(w, h, inner) {
 }
 
 function svgNode(cx, cy, r, label, state, pulse) {
+  r = Math.max(r, 18); // minimum node size
   const colors = {
     default: {fill:'var(--bg-surface)',stroke:'var(--border-med)',text:'var(--text-1)'},
     active:  {fill:'var(--accent-bg)',stroke:'var(--accent)',text:'var(--accent2)'},
@@ -2242,22 +2406,25 @@ function svgNode(cx, cy, r, label, state, pulse) {
     end:     {fill:'var(--yellow-bg)',stroke:'var(--yellow)',text:'var(--yellow)'},
   };
   const c = colors[state] || colors.default;
-  const glow = (state === 'active' && pulse) ? 
-    `<animate attributeName="r" values="${r};${r+2};${r}" dur="1.2s" repeatCount="indefinite"/>
-     <filter id="gf"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>` : '';
-  const filterAttr = (state === 'active' && pulse) ? 'filter="url(#gf)"' : '';
-  return `<defs>${glow}</defs>
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2.5" ${filterAttr}/>
-    <text x="${cx}" y="${cy+4}" text-anchor="middle" fill="${c.text}" font-size="${r > 15 ? 11 : 9}" font-weight="700" font-family="var(--font-sans)">${label}</text>`;
+  const glowColor = state==='active'?'rgba(99,102,241,0.5)':state==='visited'||state==='found'?'rgba(16,185,129,0.4)':'none';
+  const filterAttr = (pulse && state !== 'default') ? `filter="url(#glow-${state})"` : '';
+  const glowDef = (pulse && state !== 'default') ? `<filter id="glow-${state}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>` : '';
+  const anim = (state === 'active' && pulse) ? `<animate attributeName="r" values="${r};${r+2};${r}" dur="1.2s" repeatCount="indefinite"/>` : '';
+  const fontSize = r >= 20 ? 12 : 10;
+  return `<defs>${glowDef}</defs>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2.5" ${filterAttr}>${anim}</circle>
+    <text x="${cx}" y="${cy+4}" text-anchor="middle" fill="${c.text}" font-size="${fontSize}" font-weight="800" font-family="var(--font-sans)">${label}</text>`;
 }
 
 function svgEdge(x1,y1,x2,y2,active,weighted,w) {
   const stroke = active ? 'var(--green)' : 'var(--border-med)';
-  const sw = active ? 2.5 : 1.8;
-  let line = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="${sw}"/>`;
+  const sw = active ? 3 : 2;
+  const dash = active ? '' : 'stroke-dasharray="4 3"';
+  let line = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="${sw}" ${dash}/>`;
   if (weighted) {
-    const mx=(x1+x2)/2, my=(y1+y2)/2-5;
-    line += `<text x="${mx}" y="${my}" text-anchor="middle" fill="var(--yellow)" font-size="10" font-weight="700" font-family="var(--font-mono)">${w}</text>`;
+    const mx=(x1+x2)/2, my=(y1+y2)/2-7;
+    line += `<rect x="${mx-8}" y="${my-9}" width="16" height="13" rx="3" fill="var(--bg-card)" opacity="0.85"/>
+      <text x="${mx}" y="${my}" text-anchor="middle" fill="var(--yellow)" font-size="11" font-weight="800" font-family="var(--font-mono)">${w}</text>`;
   }
   return line;
 }
@@ -2279,7 +2446,7 @@ function svgArrow(x1,y1,x2,y2,active) {
 // ============================================================
 let arrData = [5,2,8,1,9,3,7,4];
 
-function resetArr() { arrData=[5,2,8,1,9,3,7,4]; renderArrViz(-1); const l=document.getElementById('arrLog'); if(l) l.textContent='Array reset'; }
+function _resetArrOld() {}
 function shuffleArr() { arrData.sort(()=>Math.random()-0.5); renderArrViz(-1); }
 function renderArrViz(h) {
   const viz=document.getElementById('arrViz'); if(!viz) return;
@@ -2287,15 +2454,20 @@ function renderArrViz(h) {
 }
 function selectArrEl(i,v) {
   renderArrViz(i);
-  const l=document.getElementById('arrLog'); if(l) l.innerHTML=`<strong>arr[${i}] = ${v}</strong> &nbsp;·&nbsp; Index: ${i} &nbsp;·&nbsp; Address: 0x${(0x100+i*4).toString(16).toUpperCase()}`;
+  const l=document.getElementById('arrLog'); if(l) l.innerHTML=`arr[${i}] = <strong>${v}</strong> | Address: 0x${(0x100+i*4).toString(16).toUpperCase()}`;
+  setVizExplain('arr','🗂️',`arr[${i}] = ${v} selected`,`Index = <strong>${i}</strong> | Value = <span class="val-green">${v}</span> | Memory = 0x${(0x100+i*4).toString(16).toUpperCase()}<br>Arrays store elements at contiguous memory addresses — O(1) access`, 'found');
 }
+function resetArr() { arrData=[5,2,8,1,9,3,7,4]; renderArrViz(-1); setVizExplain('arr','🗂️','Array reset — click any element','8 elements. Contiguous memory. O(1) index access, O(n) search.',''); }
 
 // ============================================================
 // LINKED LIST VIZ
 // ============================================================
 let llData=[4,2,7,1];
-function resetLL(){ llData=[4,2,7,1]; renderLL(); }
-function addLLNode(){ llData.unshift(Math.floor(Math.random()*20)+1); renderLL(); }
+function resetLL(){ llData=[4,2,7,1]; renderLL(); setVizExplain('ll','🔗','Linked list reset','4 nodes. Head → 4 → 2 → 7 → 1 → null. O(1) prepend, O(n) search.',''); }
+function addLLNode(){
+  const v=Math.floor(Math.random()*20)+1; llData.unshift(v); renderLL();
+  setVizExplain('ll','📥',`Prepend ${v} — new head node`,`O(1) prepend: allocate node, point it to old head<br>List: <span class="val-green">${v}</span> → ${llData.slice(1).join(' → ')} → null`, 'found');
+}
 function renderLL(){
   const viz=document.getElementById('llViz'); if(!viz) return;
   viz.innerHTML=llData.map((v,i)=>
@@ -2307,22 +2479,29 @@ function renderLL(){
 // STACK VIZ
 // ============================================================
 let stackData=[];
-function stackPush(){ const v=Math.floor(Math.random()*99)+1; stackData.push(v); renderStack(); const l=document.getElementById('stackLog'); if(l) l.textContent=`Pushed ${v} → top of stack`; }
+function stackPush(){
+  const v=Math.floor(Math.random()*99)+1; stackData.push(v); renderStack();
+  const l=document.getElementById('stackLog'); if(l) l.textContent=`Pushed ${v} → top of stack`;
+  setVizExplain('stack','📥',`push(${v}) — added to top`,`Stack size: <strong>${stackData.length}</strong> | Top = <span class="val-green">${v}</span><br>O(1) push — no shifting needed`, 'found');
+}
 function stackPop(){
-  if(!stackData.length) return;
+  if(!stackData.length){ setVizExplain('stack','⚠️','Stack is empty — nothing to pop','Cannot pop from an empty stack (underflow)', 'error'); return; }
   const v=stackData.pop(); renderStack();
   const l=document.getElementById('stackLog'); if(l) l.textContent=`Popped ${v} ← was on top`;
+  const newTop=stackData.length?stackData[stackData.length-1]:'empty';
+  setVizExplain('stack','📤',`pop() → returned ${v}`,`Removed top element <span class="val-yellow">${v}</span>. New top = <strong>${newTop}</strong><br>O(1) pop — no shifting needed`, 'compare');
 }
 function renderStack(){
   const viz=document.getElementById('stackViz'); if(!viz) return;
-  if(!stackData.length){ viz.innerHTML='<span style="font-size:13px;color:var(--text-3);padding:20px">Stack is empty</span>'; return; }
+  if(!stackData.length){ viz.innerHTML='<div style="font-size:13px;color:var(--text-3);padding:32px;text-align:center;border:2px dashed var(--border-med);border-radius:var(--radius-md);width:120px">empty</div>'; return; }
   viz.innerHTML=[...stackData].reverse().map((v,i)=>{
     const isTop=i===0;
-    return `<div style="width:90px;height:38px;display:flex;align-items:center;justify-content:center;
-      border:2px solid ${isTop?'var(--accent)':'var(--border-med)'};border-radius:var(--radius-md);
-      font-size:14px;font-weight:700;background:${isTop?'var(--accent-bg)':'var(--bg-surface)'};
+    return `<div style="width:110px;height:44px;display:flex;align-items:center;justify-content:center;
+      border:2.5px solid ${isTop?'var(--accent)':'var(--border-med)'};border-radius:var(--radius-md);
+      font-size:17px;font-weight:800;background:${isTop?'var(--accent-bg)':'var(--bg-surface)'};
       color:${isTop?'var(--accent2)':'var(--text-1)'};position:relative;
-      animation:${isTop&&stackData.length>0?'pop-in 0.3s var(--ease)':''}">${v}${isTop?'<span style="position:absolute;right:-46px;font-size:10px;color:var(--accent2);font-weight:700">← top</span>':''}</div>`;
+      box-shadow:${isTop?'0 0 16px rgba(99,102,241,0.3)':'none'};
+      animation:${isTop?'pop-in 0.35s var(--ease)':''}">${v}${isTop?'<span style="position:absolute;right:-52px;font-size:10.5px;color:var(--accent2);font-weight:800;letter-spacing:.02em">← TOP</span>':''}</div>`;
   }).join('');
 }
 
@@ -2330,8 +2509,17 @@ function renderStack(){
 // QUEUE VIZ
 // ============================================================
 let qData=[];
-function qEnqueue(){ const v=Math.floor(Math.random()*99)+1; qData.push(v); renderQ(); const l=document.getElementById('qLog'); if(l) l.textContent=`Enqueued ${v} at rear`; }
-function qDequeue(){ if(!qData.length) return; const v=qData.shift(); renderQ(); const l=document.getElementById('qLog'); if(l) l.textContent=`Dequeued ${v} from front`; }
+function qEnqueue(){
+  const v=Math.floor(Math.random()*99)+1; qData.push(v); renderQ();
+  const l=document.getElementById('qLog'); if(l) l.textContent=`Enqueued ${v} at rear`;
+  setVizExplain('q','➡️',`enqueue(${v}) — added to rear`,`Queue size: <strong>${qData.length}</strong> | Front = <strong>${qData[0]}</strong> | Rear = <span class="val-green">${v}</span>`, 'found');
+}
+function qDequeue(){
+  if(!qData.length){ setVizExplain('q','⚠️','Queue is empty — nothing to dequeue','Cannot dequeue from an empty queue (underflow)', 'error'); return; }
+  const v=qData.shift(); renderQ();
+  const l=document.getElementById('qLog'); if(l) l.textContent=`Dequeued ${v} from front`;
+  setVizExplain('q','⬅️',`dequeue() → returned ${v}`,`Removed front element <span class="val-yellow">${v}</span>. New front = <strong>${qData[0]??'empty'}</strong>`, 'compare');
+}
 function renderQ(){
   const viz=document.getElementById('qViz'); if(!viz) return;
   if(!qData.length){ viz.innerHTML='<span style="font-size:13px;color:var(--text-3)">Queue is empty</span>'; return; }
@@ -2389,10 +2577,25 @@ function bsStep(){
   document.getElementById('bsTarget').disabled=true;
   const mid=Math.floor((bsLo+bsHi)/2);
   const l=document.getElementById('bsLog');
-  if(bsArr[mid]===t){ bsFound=mid; renderBS(bsLo,bsHi,mid); if(l) l.innerHTML=`<span style="color:var(--green)">✓ Found ${t} at index ${mid}!</span>`; }
-  else if(bsArr[mid]<t){ renderBS(bsLo,bsHi,mid); if(l) l.textContent=`arr[${mid}]=${bsArr[mid]} < ${t} → search right half [${mid+1}, ${bsHi}]`; bsLo=mid+1; }
-  else { renderBS(bsLo,bsHi,mid); if(l) l.textContent=`arr[${mid}]=${bsArr[mid]} > ${t} → search left half [${bsLo}, ${mid-1}]`; bsHi=mid-1; }
-  if(bsFound===-1&&bsLo>bsHi&&l) l.innerHTML=`<span style="color:var(--red)">✗ Target ${t} not found</span>`;
+  if(bsArr[mid]===t){
+    bsFound=mid; renderBS(bsLo,bsHi,mid);
+    if(l) l.innerHTML=`✓ Found <strong>${t}</strong> at index <strong>${mid}</strong>!`;
+    setVizExplain('bs','✅',`Found! arr[${mid}] = ${t}`,`<span class="val-green">Target matched at mid = ${mid}</span> — search complete in O(log n)`, 'found');
+  } else if(bsArr[mid]<t){
+    renderBS(bsLo,bsHi,mid);
+    if(l) l.textContent=`arr[${mid}]=${bsArr[mid]} < ${t} → search right half [${mid+1}, ${bsHi}]`;
+    setVizExplain('bs','🔍',`arr[mid] = ${bsArr[mid]} < target ${t}`,`mid = <strong>${mid}</strong> | lo = <strong>${bsLo}</strong> | hi = <strong>${bsHi}</strong><br>Since arr[mid] is too small → <span class="val-yellow">move lo to ${mid+1}</span>`, 'compare');
+    bsLo=mid+1;
+  } else {
+    renderBS(bsLo,bsHi,mid);
+    if(l) l.textContent=`arr[${mid}]=${bsArr[mid]} > ${t} → search left half [${bsLo}, ${mid-1}]`;
+    setVizExplain('bs','🔍',`arr[mid] = ${bsArr[mid]} > target ${t}`,`mid = <strong>${mid}</strong> | lo = <strong>${bsLo}</strong> | hi = <strong>${bsHi}</strong><br>Since arr[mid] is too large → <span class="val-yellow">move hi to ${mid-1}</span>`, 'compare');
+    bsHi=mid-1;
+  }
+  if(bsFound===-1&&bsLo>bsHi){
+    if(l) l.innerHTML=`✗ Target <strong>${t}</strong> not found`;
+    setVizExplain('bs','❌',`Target ${t} not found`,`Search space exhausted (lo > hi). The value does not exist in the array.`, 'error');
+  }
 }
 function renderBS(lo,hi,mid){
   const viz=document.getElementById('bsViz'); if(!viz) return;
@@ -2411,16 +2614,25 @@ let sortData=[], sortI=0, sortJ=0, sortDone=false;
 function initBsort(){ sortData=[6,3,8,1,5,9,2,7].map(v=>({v,state:''})); sortI=0; sortJ=0; sortDone=false; clearInterval(sortTimer); renderBsortBars(); const l=document.getElementById('sortLog'); if(l) l.textContent='Press "Next Step" to begin'; }
 function bsortStep(){
   const n=sortData.length;
-  if(sortI>=n-1){ sortDone=true; sortData.forEach(d=>d.state='sorted'); renderBsortBars(); return; }
+  if(sortI>=n-1){
+    sortDone=true; sortData.forEach(d=>d.state='sorted'); renderBsortBars();
+    setVizExplain('sort','✅','Array fully sorted!',`Bubble sort complete — <span class="val-green">${n*(n-1)/2} comparisons max</span>, O(n²) time`, 'done');
+    return;
+  }
   sortData.forEach(d=>d.state='');
   for(let k=n-sortI-1;k<n;k++) sortData[k].state='sorted';
   if(sortJ<n-sortI-1){
     sortData[sortJ].state='compare'; sortData[sortJ+1].state='compare';
     const l=document.getElementById('sortLog');
     if(sortData[sortJ].v>sortData[sortJ+1].v){
+      const a=sortData[sortJ].v, b=sortData[sortJ+1].v;
       const t=sortData[sortJ].v; sortData[sortJ].v=sortData[sortJ+1].v; sortData[sortJ+1].v=t;
-      if(l) l.textContent=`Swapped ${sortData[sortJ+1].v} ↔ ${sortData[sortJ].v}`;
-    } else { if(l) l.textContent=`${sortData[sortJ].v} ≤ ${sortData[sortJ+1].v} — no swap needed`; }
+      if(l) l.textContent=`Swapped ${b} ↔ ${a} (pass ${sortI+1}, compare j=${sortJ})`;
+      setVizExplain('sort','🔄',`Swap! arr[${sortJ}]=${b} < arr[${sortJ+1}]=${a}`,`Pass <strong>${sortI+1}</strong>, j = <strong>${sortJ}</strong> — <span class="val-yellow">${b} and ${a} are out of order → swap</span>`, 'compare');
+    } else {
+      if(l) l.textContent=`${sortData[sortJ].v} ≤ ${sortData[sortJ+1].v} — no swap needed`;
+      setVizExplain('sort','✓',`No swap — arr[${sortJ}]=${sortData[sortJ].v} ≤ arr[${sortJ+1}]=${sortData[sortJ+1].v}`,`Pass <strong>${sortI+1}</strong>, j = <strong>${sortJ}</strong> — already in order, move on`, '');
+    }
     sortJ++;
   } else { sortI++; sortJ=0; }
   renderBsortBars();
@@ -2430,9 +2642,10 @@ function renderBsortBars(){
   const viz=document.getElementById('sortViz'); if(!viz) return;
   const max=Math.max(...sortData.map(d=>d.v));
   viz.innerHTML=sortData.map(d=>{
-    const h=Math.round(d.v/max*80);
+    const h=Math.round(d.v/max*100);
     const bg=d.state==='compare'?'var(--yellow)':d.state==='sorted'?'var(--green)':'var(--accent)';
-    return `<div class="sort-bar" style="height:${h}px;background:${bg};width:30px">${d.v}</div>`;
+    const shadow=d.state==='compare'?'0 0 12px rgba(245,158,11,0.5)':d.state==='sorted'?'0 0 12px rgba(16,185,129,0.5)':'none';
+    return `<div class="sort-bar" style="height:${h}px;background:${bg};width:36px;box-shadow:${shadow}">${d.v}</div>`;
   }).join('');
 }
 
@@ -2479,7 +2692,12 @@ function initQsort(){
 // ============================================================
 let swinArr=[2,3,-1,-3,5,3,6,7], swinIdx=0;
 function initSwin(){ swinIdx=0; renderSwin(); const l=document.getElementById('swinLog'); if(l) l.textContent='Window initialized at index 0'; }
-function swinStep(){ swinIdx=swinIdx>=swinArr.length-3?0:swinIdx+1; renderSwin(); }
+function swinStep(){
+  swinIdx=swinIdx>=swinArr.length-3?0:swinIdx+1;
+  renderSwin();
+  const k=3, active=swinArr.slice(swinIdx,swinIdx+k), sum=active.reduce((a,b)=>a+b,0), max=Math.max(...active);
+  setVizExplain('swin','🪟',`Window [${swinIdx}..${swinIdx+2}] = [${active.join(', ')}]`,`Sum = <strong>${sum}</strong> | Max = <span class="val-green">${max}</span><br>Slide adds arr[${swinIdx+k-1}], removes arr[${swinIdx-1}] — O(1) update`, '');
+}
 function renderSwin(){
   const viz=document.getElementById('swinViz'); if(!viz) return;
   const k=3, active=swinArr.slice(swinIdx,swinIdx+k), max=Math.max(...active);
@@ -2498,9 +2716,17 @@ function initTwop(){ twopL=0; twopR=5; twopDone=false; renderTwop(); const l=doc
 function twopStep(){
   if(twopDone||twopL>=twopR){ initTwop(); return; }
   const sum=twopArr[twopL]+twopArr[twopR]; const l=document.getElementById('twopLog');
-  if(sum===14){ twopDone=true; renderTwop(); if(l) l.innerHTML=`<span style="color:var(--green)">✓ Found! ${twopArr[twopL]} + ${twopArr[twopR]} = 14</span>`; }
-  else if(sum<14){ if(l) l.textContent=`Sum (${sum}) < 14 → move Left right`; twopL++; renderTwop(); }
-  else { if(l) l.textContent=`Sum (${sum}) > 14 → move Right left`; twopR--; renderTwop(); }
+  if(sum===14){
+    twopDone=true; renderTwop();
+    if(l) l.innerHTML=`✓ Found! <strong>${twopArr[twopL]} + ${twopArr[twopR]} = 14</strong>`;
+    setVizExplain('twop','✅',`Found pair: arr[${twopL}] + arr[${twopR}] = ${twopArr[twopL]} + ${twopArr[twopR]} = 14`,`<span class="val-green">Target sum reached!</span> Two pointers met the condition — O(n) solution`, 'found');
+  } else if(sum<14){
+    setVizExplain('twop','👈',`Sum = ${sum} < 14 → move L right`,`arr[L=${twopL}] = <strong>${twopArr[twopL]}</strong>, arr[R=${twopR}] = <strong>${twopArr[twopR]}</strong><br><span class="val-yellow">Sum too small</span> → advance Left to increase sum`, 'compare');
+    if(l) l.textContent=`Sum (${sum}) < 14 → move Left right`; twopL++; renderTwop();
+  } else {
+    setVizExplain('twop','👉',`Sum = ${sum} > 14 → move R left`,`arr[L=${twopL}] = <strong>${twopArr[twopL]}</strong>, arr[R=${twopR}] = <strong>${twopArr[twopR]}</strong><br><span class="val-yellow">Sum too large</span> → move Right back to decrease sum`, 'compare');
+    if(l) l.textContent=`Sum (${sum}) > 14 → move Right left`; twopR--; renderTwop();
+  }
 }
 function renderTwop(){
   const viz=document.getElementById('twopViz'); if(!viz) return;
@@ -2538,10 +2764,18 @@ function renderTree(){
 function runTreeTraversal(type){
   initTreeViz();
   treeSeq=type==='pre'?[4,2,1,3,6,5,7]:type==='in'?[1,2,3,4,5,6,7]:[1,3,2,5,7,6,4];
+  const typeNames={pre:'Preorder (Root→Left→Right)',in:'Inorder (Left→Root→Right)',post:'Postorder (Left→Right→Root)'};
+  setVizExplain('tree','🌳',typeNames[type],`Animating nodes one by one — watch the traversal order`, 'compare');
   function next(){
-    if(treeSeqIdx>=treeSeq.length){ activeTreeNode=null; renderTree(); const l=document.getElementById('treeLog'); if(l) l.textContent=`Done! Order: [${treeSeq.join(', ')}]`; return; }
+    if(treeSeqIdx>=treeSeq.length){
+      activeTreeNode=null; renderTree();
+      const l=document.getElementById('treeLog'); if(l) l.textContent=`Done! Order: [${treeSeq.join(', ')}]`;
+      setVizExplain('tree','✅',`${typeNames[type]} complete!`,`Visit order: <span class="val-green">${treeSeq.join(' → ')}</span>`, 'done');
+      return;
+    }
     activeTreeNode=treeSeq[treeSeqIdx]; treeSeqIdx++; renderTree();
     const l=document.getElementById('treeLog'); if(l) l.textContent=`Visiting node ${activeTreeNode} · path so far: [${treeSeq.slice(0,treeSeqIdx).join(', ')}]`;
+    setVizExplain('tree','🌳',`Visiting node ${activeTreeNode}`,`So far: <span class="val-yellow">${treeSeq.slice(0,treeSeqIdx).join(' → ')}</span><br>Remaining: ${treeSeq.slice(treeSeqIdx).join(', ')||'none'}`, 'compare');
     treeTimer=setTimeout(next,750);
   }
   next();
@@ -2564,10 +2798,18 @@ function renderGraph(){
 function runGraphSearch(type){
   initGraphViz();
   graphSeq=type==='bfs'?['A','B','C','D','E']:['A','B','D','E','C'];
+  const desc=type==='bfs'?'Queue-based level-by-level expansion':'Stack-based deep dive before backtracking';
+  setVizExplain('graph',type==='bfs'?'🌊':'🕳️',`${type.toUpperCase()} started from node A`,desc+`<br>Click "Reset" to stop animation`, 'compare');
   function next(){
-    if(graphSeqIdx>=graphSeq.length){ activeGraphNode=null; renderGraph(); const l=document.getElementById('graphLog'); if(l) l.textContent=`${type.toUpperCase()} complete! Path: [${graphSeq.join(' → ')}]`; return; }
+    if(graphSeqIdx>=graphSeq.length){
+      activeGraphNode=null; renderGraph();
+      const l=document.getElementById('graphLog'); if(l) l.textContent=`${type.toUpperCase()} complete! Path: [${graphSeq.join(' → ')}]`;
+      setVizExplain('graph','✅',`${type.toUpperCase()} complete! All nodes visited`,`Order: <span class="val-green">${graphSeq.join(' → ')}</span><br>${type==='bfs'?'BFS guarantees shortest path (unweighted)':'DFS uses O(h) stack space (h = height)'}`, 'done');
+      return;
+    }
     activeGraphNode=graphSeq[graphSeqIdx]; graphVisited.push(activeGraphNode); graphSeqIdx++; renderGraph();
     const l=document.getElementById('graphLog'); if(l) l.textContent=`${type.toUpperCase()} visiting: ${activeGraphNode} · visited: [${graphVisited.join(' → ')}]`;
+    setVizExplain('graph',type==='bfs'?'🌊':'🕳️',`Visiting node ${activeGraphNode}`,`Visited so far: <span class="val-yellow">${graphVisited.join(' → ')}</span><br>Remaining: [${graphSeq.slice(graphSeqIdx).join(', ')||'none'}]`, 'compare');
     graphTimer=setTimeout(next,900);
   }
   next();
@@ -2580,10 +2822,19 @@ let dijkStep=0, dijkDist={A:0,B:Infinity,C:Infinity}, dijkActive=null, dijkRelax
 function initDijkstraViz(){ dijkStep=0; dijkDist={A:0,B:Infinity,C:Infinity}; dijkActive=null; dijkRelaxed=[]; renderDijkstra(); const l=document.getElementById('dijkstraLog'); if(l) l.textContent='Press "Relax Next Edge" to trace Dijkstra'; }
 function dijkstraStep(){
   const l=document.getElementById('dijkstraLog');
-  if(dijkStep===0){ dijkActive='A'; dijkDist.B=2; dijkDist.C=5; dijkRelaxed=['A-B','A-C']; dijkStep++; if(l) l.textContent='Relaxed from A: dist[B]=2, dist[C]=5'; }
-  else if(dijkStep===1){ dijkActive='B'; const nd=dijkDist.B+1; if(nd<dijkDist.C){dijkDist.C=nd;dijkRelaxed.push('B-C');} dijkStep++; if(l) l.textContent=`Relaxed from B: dist[C] updated to ${dijkDist.C} (A→B→C shorter!)`; }
-  else if(dijkStep===2){ dijkActive='C'; dijkStep++; if(l) l.textContent='Node C finalized. Shortest paths: A=0, B=2, C=3'; }
-  else { initDijkstraViz(); return; }
+  if(dijkStep===0){
+    dijkActive='A'; dijkDist.B=2; dijkDist.C=5; dijkRelaxed=['A-B','A-C']; dijkStep++;
+    if(l) l.textContent='Relaxed from A: dist[B]=2, dist[C]=5';
+    setVizExplain('dijkstra','🗺️','Start at A (dist=0). Relax all edges.',`A→B: dist[B] = <span class="val-yellow">2</span> | A→C: dist[C] = <span class="val-yellow">5</span><br>Pick nearest unvisited: <strong>B (dist=2)</strong>`, 'compare');
+  } else if(dijkStep===1){
+    dijkActive='B'; const nd=dijkDist.B+1; if(nd<dijkDist.C){dijkDist.C=nd;dijkRelaxed.push('B-C');} dijkStep++;
+    if(l) l.textContent=`Relaxed from B: dist[C] updated to ${dijkDist.C} (A→B→C shorter!)`;
+    setVizExplain('dijkstra','⚡',`Visit B (dist=2). Relax edge B→C`,`A→C was ${5}. A→B→C = 2+1 = <span class="val-green">3</span> — <strong>shorter path found!</strong><br>Update dist[C] = 3`, 'found');
+  } else if(dijkStep===2){
+    dijkActive='C'; dijkStep++;
+    if(l) l.textContent='Node C finalized. Shortest paths: A=0, B=2, C=3';
+    setVizExplain('dijkstra','✅','All nodes finalized!',`Shortest paths: A = <span class="val-green">0</span> | B = <span class="val-green">2</span> | C = <span class="val-green">3</span><br>Greedy: always expand nearest unvisited node`, 'done');
+  } else { initDijkstraViz(); return; }
   renderDijkstra();
 }
 function renderDijkstra(){
@@ -2609,10 +2860,24 @@ function initRecur(){ recurStack=[]; recurStepCount=0; recurDone=false; renderRe
 function recurStep(){
   const l=document.getElementById('recurLog');
   if(recurDone){ initRecur(); return; }
-  if(recurStepCount<4){ const v=4-recurStepCount; recurStack.push({name:`factorial(${v})`,state:'active',ret:null}); recurStepCount++; if(l) l.textContent=`Pushed factorial(${v}) → recursively calling factorial(${v-1})`; }
-  else if(recurStepCount===4){ recurStack[recurStack.length-1].ret=1; recurStack[recurStack.length-1].state='returned'; recurStepCount++; if(l) l.textContent='Base case! factorial(1) = 1. Unwinding starts…'; }
-  else if(recurStepCount<8){ const ai=8-recurStepCount; const childVal=recurStack[ai].ret; const n=ai+1; const res=n*childVal; recurStack[ai-1].ret=res; recurStack[ai-1].state='returned'; recurStack.pop(); recurStepCount++; if(l) l.textContent=`factorial(${n}) = ${n} × ${childVal} = ${res}`; }
-  else { recurDone=true; if(l) l.textContent='Unwind complete! factorial(4) = 24 ✓'; }
+  if(recurStepCount<4){
+    const v=4-recurStepCount; recurStack.push({name:`factorial(${v})`,state:'active',ret:null}); recurStepCount++;
+    if(l) l.textContent=`Pushed factorial(${v}) → recursively calling factorial(${v-1})`;
+    setVizExplain('recur','📞',`Call: factorial(${v})`,`factorial(${v}) calls factorial(${v-1}) — frame pushed onto call stack<br>Stack depth: <strong>${recurStack.length}</strong>`, 'compare');
+  } else if(recurStepCount===4){
+    recurStack[recurStack.length-1].ret=1; recurStack[recurStack.length-1].state='returned'; recurStepCount++;
+    if(l) l.textContent='Base case! factorial(1) = 1. Unwinding starts…';
+    setVizExplain('recur','🛑',`Base case: factorial(1) = 1`,`n=1 → return 1 immediately (no more recursion). <span class="val-green">Unwinding begins!</span>`, 'found');
+  } else if(recurStepCount<8){
+    const ai=8-recurStepCount; const childVal=recurStack[ai].ret; const n=ai+1; const res=n*childVal;
+    recurStack[ai-1].ret=res; recurStack[ai-1].state='returned'; recurStack.pop(); recurStepCount++;
+    if(l) l.textContent=`factorial(${n}) = ${n} × ${childVal} = ${res}`;
+    setVizExplain('recur','↩️',`Return: factorial(${n}) = ${n} × ${childVal} = ${res}`,`Frame popped, result <span class="val-green">${res}</span> returned to caller. Stack depth: <strong>${recurStack.length-1}</strong>`, 'found');
+  } else {
+    recurDone=true;
+    if(l) l.textContent='Unwind complete! factorial(4) = 24 ✓';
+    setVizExplain('recur','🎉',`factorial(4) = 24 — complete!`,`All frames resolved. O(n) time, O(n) space for call stack — <span class="val-green">4 frames used</span>`, 'done');
+  }
   renderRecur();
 }
 function renderRecur(){
@@ -2638,9 +2903,12 @@ function initDP(){ dpData=[0,1,0,0,0,0]; dpIdx=2; dpDone=false; renderDP(); cons
 function dpStep(){
   if(dpDone){ initDP(); return; }
   const l=document.getElementById('dpLog');
-  dpData[dpIdx]=dpData[dpIdx-1]+dpData[dpIdx-2];
-  if(l) l.textContent=`dp[${dpIdx}] = dp[${dpIdx-1}] + dp[${dpIdx-2}] = ${dpData[dpIdx-1]} + ${dpData[dpIdx-2]} = ${dpData[dpIdx]}`;
-  dpIdx++; if(dpIdx>=dpData.length) dpDone=true;
+  const prev2=dpData[dpIdx-2], prev1=dpData[dpIdx-1];
+  dpData[dpIdx]=prev1+prev2;
+  const result=dpData[dpIdx];
+  if(l) l.textContent=`dp[${dpIdx}] = dp[${dpIdx-1}] + dp[${dpIdx-2}] = ${prev1} + ${prev2} = ${result}`;
+  setVizExplain('dp','📊',`dp[${dpIdx}] = dp[${dpIdx-1}] + dp[${dpIdx-2}] = ${result}`,`<span class="val-yellow">dp[${dpIdx-2}] = ${prev2}</span> + <span class="val-yellow">dp[${dpIdx-1}] = ${prev1}</span> = <span class="val-green">${result}</span><br>Each cell reuses two already-computed values — O(n) time`, 'compare');
+  dpIdx++; if(dpIdx>=dpData.length){ dpDone=true; setVizExplain('dp','✅','Fibonacci table complete!',`fib(5) = <span class="val-green">${result}</span>. All cells filled in O(n) time, O(n) space — vs O(2ⁿ) naive recursion`, 'done'); }
   renderDP();
 }
 function renderDP(){
@@ -2689,9 +2957,19 @@ function kadaneStep(){
   if(kadIdx>=kadArr.length-1){ initKadane(); return; }
   kadIdx++;
   const val=kadArr[kadIdx]; const l=document.getElementById('kadaneLog');
-  if(kadLocal+val<val){ kadLocal=val; kadTempStart=kadIdx; if(l) l.textContent=`Sum went negative — restarted subarray at index ${kadIdx} (value ${val})`; }
-  else { kadLocal+=val; if(l) l.textContent=`Extended to index ${kadIdx}. Current subarray sum = ${kadLocal}`; }
-  if(kadLocal>kadGlobal){ kadGlobal=kadLocal; kadStart=kadTempStart; kadEnd=kadIdx; }
+  const prevLocal=kadLocal;
+  if(kadLocal+val<val){
+    kadLocal=val; kadTempStart=kadIdx;
+    if(l) l.textContent=`Sum went negative — restarted subarray at index ${kadIdx} (value ${val})`;
+    setVizExplain('kadane','🔄',`Restart at index ${kadIdx} (value ${val})`,`Previous sum ${prevLocal} + ${val} = ${prevLocal+val} < ${val}<br><span class="val-yellow">Current sum was negative — better to restart here</span>`, 'compare');
+  } else {
+    kadLocal+=val;
+    if(l) l.textContent=`Extended to index ${kadIdx}. Current subarray sum = ${kadLocal}`;
+    setVizExplain('kadane','📈',`Extend to index ${kadIdx} (+${val}). Sum = ${kadLocal}`,`${prevLocal} + <strong>${val}</strong> = <span class="val-green">${kadLocal}</span> — extending is better than restarting`, '');
+  }
+  if(kadLocal>kadGlobal){ kadGlobal=kadLocal; kadStart=kadTempStart; kadEnd=kadIdx;
+    setVizExplain('kadane','🏆',`New best! Max subarray sum = ${kadGlobal}`,`Best subarray: indices [${kadStart}..${kadEnd}] = <span class="val-green">${kadArr.slice(kadStart,kadEnd+1).join(', ')}</span>`, 'found');
+  }
   renderKadane();
 }
 function renderKadane(){
@@ -2731,16 +3009,35 @@ function initKMP(){ kmpTi=0; kmpPi=0; kmpMatched=false; renderKMP(); const l=doc
 function kmpStep(){
   if(kmpMatched||kmpTi>=kmpText.length){ initKMP(); return; }
   const l=document.getElementById('kmpLog');
-  if(kmpText[kmpTi]===kmpPat[kmpPi]){ kmpTi++; kmpPi++; if(l) l.textContent=`Match! T[${kmpTi-1}] == P[${kmpPi-1}] = '${kmpText[kmpTi-1]}'`; if(kmpPi===kmpPat.length){ kmpMatched=true; if(l) l.innerHTML=`<span style="color:var(--green)">✓ Pattern found at index ${kmpTi-kmpPi}!</span>`; } }
-  else { if(kmpPi!==0){ const prev=kmpPi; kmpPi=kmpLPS[kmpPi-1]; if(l) l.textContent=`Mismatch! LPS jump: pattern index ${prev} → ${kmpPi}`; } else { if(l) l.textContent=`Mismatch at pattern root. Advancing text.`; kmpTi++; } }
+  if(kmpText[kmpTi]===kmpPat[kmpPi]){
+    kmpTi++; kmpPi++;
+    if(l) l.textContent=`Match! T[${kmpTi-1}] == P[${kmpPi-1}] = '${kmpText[kmpTi-1]}'`;
+    if(kmpPi===kmpPat.length){
+      kmpMatched=true;
+      if(l) l.innerHTML=`✓ Pattern found at index ${kmpTi-kmpPi}!`;
+      setVizExplain('kmp','✅',`Pattern "${kmpPat}" found at index ${kmpTi-kmpPi}!`,`<span class="val-green">Full match!</span> KMP avoids re-checking matched characters using the LPS array`, 'found');
+    } else {
+      setVizExplain('kmp','✅',`Match: T[${kmpTi-1}]='${kmpText[kmpTi-1]}' == P[${kmpPi-1}]='${kmpPat[kmpPi-1]}'`,`Matched ${kmpPi}/${kmpPat.length} characters so far. Keep advancing both pointers.`, 'compare');
+    }
+  } else {
+    if(kmpPi!==0){
+      const prev=kmpPi; kmpPi=kmpLPS[kmpPi-1];
+      if(l) l.textContent=`Mismatch! LPS jump: pattern index ${prev} → ${kmpPi}`;
+      setVizExplain('kmp','⏭️',`Mismatch → LPS jump: pi ${prev} → ${kmpPi}`,`T[${kmpTi}]='${kmpText[kmpTi]}' ≠ P[${prev}]='${kmpPat[prev]}'<br><span class="val-yellow">No backtrack in text!</span> Pattern pointer jumps to LPS[${prev-1}]=${kmpPi}`, 'compare');
+    } else {
+      if(l) l.textContent=`Mismatch at pattern root. Advancing text.`;
+      setVizExplain('kmp','❌',`Mismatch at pattern start`,`T[${kmpTi}]='${kmpText[kmpTi]}' ≠ P[0]='${kmpPat[0]}'. Pattern index = 0 → advance text pointer only`, '');
+      kmpTi++;
+    }
+  }
   renderKMP();
 }
 function renderKMP(){
   const tv=document.getElementById('kmpTextViz'), pv=document.getElementById('kmpPatViz'); if(!tv||!pv) return;
-  tv.innerHTML=kmpText.split('').map((c,i)=>`<div class="arr-box${i===kmpTi?' compare':''}">${c}<span class="idx">${i}</span></div>`).join('');
-  const off=(kmpTi-kmpPi)*38;
+  tv.innerHTML=kmpText.split('').map((c,i)=>`<div class="arr-box${i===kmpTi?' compare':i<kmpTi&&kmpPi>0&&i>=kmpTi-kmpPi?' highlight':''}">${c}<span class="idx">${i}</span></div>`).join('');
+  const off=(kmpTi-kmpPi)*58;
   pv.style.marginLeft=off+'px';
-  pv.innerHTML=kmpPat.split('').map((c,i)=>`<div class="arr-box${kmpMatched?' found':i===kmpPi?' compare':''}">${c}<span class="idx">${i}</span></div>`).join('');
+  pv.innerHTML=kmpPat.split('').map((c,i)=>`<div class="arr-box${kmpMatched?' found':i===kmpPi?' compare':i<kmpPi?' highlight':''}">${c}<span class="idx">${i}</span></div>`).join('');
 }
 
 // ============================================================
